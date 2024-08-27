@@ -53,12 +53,24 @@ function initMap() {
                     alert('An unknown error occurred.');
                 }
                 // Keep the default location if geolocation fails
+                new google.maps.Marker({
+                    position: defaultLocation,
+                    map: map,
+                    title: "Manhattan",
+                });
+                
             }
         );
     } else {
         console.log('Error: Your browser doesn\'t support geolocation.');
         alert('Geolocation is not supported by your browser. Default location will be used.');
     }
+
+    new google.maps.Marker({
+        position: defaultLocation,
+        map: map,
+        title: "Manhattan",
+    });
 
     console.log('Map initialized');
 }
