@@ -22,7 +22,7 @@
 </head>
 <body>
     <div id="map"></div>
-    <button id="locationButton">Share My Location</button>
+    <button id="locationButton" aria-label="Share My Location">Share My Location</button>
 
     <script src="{{ url_for('static', path='/js/map.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" async defer></script>
