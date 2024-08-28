@@ -1,12 +1,9 @@
-// static/js/map.js
-
 let map;
 let userMarker;
 
 function initMap() {
     console.log('Initializing map...');
     
-    // Start with a default location (e.g., Manhattan)
     const defaultLocation = { lat: 40.7831, lng: -73.9712 };
     
     map = new google.maps.Map(document.getElementById("map"), {
@@ -26,11 +23,9 @@ function getUserLocation() {
                     lng: position.coords.longitude
                 };
                 
-                // Center the map on the user's location
                 map.setCenter(userLocation);
-                map.setZoom(15);  // Zoom in closer
+                map.setZoom(15);
                 
-                // Add or update marker for the user's location
                 if (userMarker) {
                     userMarker.setPosition(userLocation);
                 } else {
@@ -50,6 +45,26 @@ function getUserLocation() {
                 }
 
                 console.log('User location set');
+                
+                // Capture and send location data
+                const timestamp = new Date().toISOString();
+                const locationData = {
+                    latitude: userLocation.lat,
+                    longitude: userLocation.lng,
+                    timestamp: timestamp
+                };
+                
+                // Send data to server
+                fetch('/log-location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(locationData),
+                })
+                .then(response => response.json())
+                .then(data => console.log('Location logged:', data))
+                .catch((error) => console.error('Error logging location:', error));
             },
             (error) => {
                 console.log('Error: ' + error.message);
@@ -62,15 +77,12 @@ function getUserLocation() {
     }
 }
 
-// Initialize the map and add event listeners when the window loads
 window.onload = function() {
     const mapDiv = document.getElementById('map');
     mapDiv.style.visibility = 'visible';
     mapDiv.style.height = '100%';
     
-    // Add click event listener to the location button
     document.getElementById('locationButton').addEventListener('click', getUserLocation);
     
-    // Force a resize event to ensure the map fills the container
     window.dispatchEvent(new Event('resize'));
 }

@@ -1,29 +1,71 @@
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 import os
 from dotenv import load_dotenv
+from pydantic import BaseModel
+from datetime import datetime
+from sqlalchemy import create_engine, Column, Integer, Float, String, DateTime
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-# Load environment variables from .env file
 load_dotenv()
 
 app = FastAPI()
 
-# Mount the static directory
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
+
+# Database setup
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+Base = declarative_base()
+
+class LocationLog(Base):
+    __tablename__ = "location_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    timestamp = Column(DateTime)
+    ip_address = Column(String)
+    server_timestamp = Column(DateTime)
+
+Base.metadata.create_all(bind=engine)
+
+class LocationData(BaseModel):
+    latitude: float
+    longitude: float
+    timestamp: str
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     google_maps_api_key = os.getenv("GOOGLE_MAPS_API_KEY")
-    
-    if not google_maps_api_key:
-        raise ValueError("Google Maps API key not found in .env file")
-    
-    print(f"API Key: {google_maps_api_key[:5]}...") # Print first 5 characters of the key
-    
     return templates.TemplateResponse("index.html", {"request": request, "google_maps_api_key": google_maps_api_key})
+
+@app.post("/log-location")
+async def log_location(location_data: LocationData, request: Request):
+    client_ip = request.client.host
+    current_time = datetime.now()
+    
+    db = SessionLocal()
+    try:
+        new_log = LocationLog(
+            latitude=location_data.latitude,
+            longitude=location_data.longitude,
+            timestamp=datetime.fromisoformat(location_data.timestamp),
+            ip_address=client_ip,
+            server_timestamp=current_time
+        )
+        db.add(new_log)
+        db.commit()
+    finally:
+        db.close()
+    
+    return JSONResponse(content={"message": "Location logged successfully"})
 
 if __name__ == "__main__":
     import uvicorn
