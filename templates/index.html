@@ -3,14 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User Location Map</title>
+    <title>Live Location Tracker</title>
     <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
     <style>
-        #locationButton {
+        #controlPanel {
             position: absolute;
             top: 10px;
-            right: 10px;
+            left: 10px;
             z-index: 1000;
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        button {
+            margin: 5px;
             padding: 10px;
             background-color: #4285F4;
             color: white;
@@ -22,7 +29,10 @@
 </head>
 <body>
     <div id="map"></div>
-    <button id="locationButton" aria-label="Share My Location">Share My Location</button>
+    <div id="controlPanel">
+        <button id="startLocationButton">Start Tracking</button>
+        <button id="stopLocationButton">Stop Tracking</button>
+    </div>
 
     <script src="{{ url_for('static', path='/js/map.js') }}"></script>
     <script src="https://maps.googleapis.com/maps/api/js?key={{ google_maps_api_key }}&callback=initMap" async defer></script>
