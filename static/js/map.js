@@ -103,10 +103,10 @@ function getUserLocation() {
                         icon: {
                             path: google.maps.SymbolPath.CIRCLE,
                             scale: 10,
-                            fillColor: "#4285F4",
+                            fillColor: "#e8a509",
                             fillOpacity: 1,
                             strokeWeight: 2,
-                            strokeColor: "#e8a509",
+                            strokeColor: "#FFFFFF",
                         }
                     });
                 }
@@ -136,7 +136,8 @@ function getUserLocation() {
             (error) => {
                 console.log('Error: ' + error.message);
                 alert('Unable to retrieve your location. ' + error.message);
-            }
+            },
+            options
         );
     } else {
         console.log('Error: Your browser doesn\'t support geolocation.');
