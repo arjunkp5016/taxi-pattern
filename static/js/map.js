@@ -15,20 +15,6 @@ function initMap() {
 
         console.log('Map centered on default location');
     }
-}
-
-// function initMap() {
-//     console.log('Initializing map...');
-//     
-//     const defaultLocation = { lat: 40.7831, lng: -73.9712 };
-//     
-//     map = new google.maps.Map(document.getElementById("map"), {
-//         zoom: 12,
-//         center: defaultLocation,
-//     });
-//
-//     console.log('Map initialized');
-// }
 
 function startLocationTracking() {
     if (navigator.geolocation) {
