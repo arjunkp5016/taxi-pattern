@@ -14,17 +14,17 @@ function initMap() {
     });
 
     //Initial marker with dynamic size
-    userMarker = new google.maps.Marker({
-        position: userLocation,
-        map: map,
-        title: "Your Location",
-        icon: getMarkerIcon(map.getZoom())
-    });
+    // userMarker = new google.maps.Marker({
+    //     position: userLocation,
+    //     map: map,
+    //     title: "Your Location",
+    //     icon: getMarkerIcon(map.getZoom())
+    // });
 
     //Add zoom change listener to adjust marker size
-    map.addlistener('zoom changed', () => {
-        userMarker.setIcon(getMarkerIcon(map.getZoom()));
-    });
+    // map.addlistener('zoom changed', () => {
+    //     userMarker.setIcon(getMarkerIcon(map.getZoom()));
+    // });
 
         console.log('Map centered on default location');
     }
@@ -66,7 +66,12 @@ function updatePosition(position) {
             position: userLocation,
             map: map,
             title: "Your Location",
-            icon: getMarkerIcon(map.getZoom())
+            icon: {
+                url: 'static/favicon.ico',
+                scaledSize: new google.maps.Size(32, 32), //Set the size of the icon
+                origin: new google.maps.Point(0, 0), //origin point of the image (top-left corner)
+                anchor: new google.maps.Point(16, 16) //Anchor point of the image (where the point is considered)
+            }
             // icon: {
             //     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
             //     scale: 10,
@@ -120,22 +125,22 @@ function logLocation(location, timestamp) {
     .catch((error) => console.error('Error logging location:', error));
 }
 
-function getMarkerIcon(zoomLevel) {
+// function getMarkerIcon(zoomLevel) {
     // Adjust size based on zoom level
     // Adjust this scale as needed to match road width
-    const scale = Math.pow(2, zoomLevel) / 1024; // Increased divisor to make scale smaller 
-    const size = 10 * scale; // Reduce base size to 10
+    // const scale = Math.pow(2, zoomLevel) / 1024; // Increased divisor to make scale smaller 
+    // const size = 10 * scale; // Reduce base size to 10
 
-    return {
-        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-        scale: size,
-        fillColor: "#FFFF00", //yellow fill
-        fillOpacity: 1,
-        strokeWeight: 2,
-        strokeColor: "#000000", //black border
-        rotation: 0 
-    };
-}
+    // return {
+    //     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+    //     scale: size,
+    //     fillColor: "#FFFF00", //yellow fill
+    //     fillOpacity: 1,
+    //     strokeWeight: 2,
+    //     strokeColor: "#000000", //black border
+    //     // rotation: 0 
+    // };
+// }
 
 window.onload = function() {
     const mapDiv = document.getElementById('map');
