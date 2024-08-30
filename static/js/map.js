@@ -13,6 +13,19 @@ function initMap() {
         center: defaultLocation,
     });
 
+    //Initial marker with dynamic size
+    userMarker = new google.maps.Marker({
+        position: userLocation,
+        map: map,
+        title: "Your Location",
+        icon: getMarkerIcon(map.getZoom())
+    });
+
+    //Add zoom change listener to adjust marker size
+    map.addlistener('zoom changed', () => {
+        userMarker.setIcon(getMarkerIcon(map.getZoom()));
+    });
+
         console.log('Map centered on default location');
     }
 
@@ -53,15 +66,16 @@ function updatePosition(position) {
             position: userLocation,
             map: map,
             title: "Your Location",
-            icon: {
-                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-                scale: 10,
-                fillColor: "#FFFF00", //yellow fill
-                fillOpacity: 1,
-                strokeWeight: 2,
-                strokeColor: "#000000", //black border
-                rotation: 0 //update this with the actual header
-            }
+            icon: getMarkerIcon(map.getZoom())
+            // icon: {
+            //     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+            //     scale: 10,
+            //     fillColor: "#FFFF00", //yellow fill
+            //     fillOpacity: 1,
+            //     strokeWeight: 2,
+            //     strokeColor: "#000000", //black border
+            //     rotation: 0 //update this with the actual header
+            // }
         });
     }
 
@@ -104,6 +118,22 @@ function logLocation(location, timestamp) {
     .then(response => response.json())
     .then(data => console.log('Location logged:', data))
     .catch((error) => console.error('Error logging location:', error));
+}
+
+function getMarkerIcon(zoomLevel) {
+    // Adjust size based on zoom level
+    const scale = Math.pow(2, zoomLevel) / 512; //Adjust this scale as needed to match road width
+    const size = 20 * scale;
+
+    return {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale: size,
+        fillColor: "#FFFF00", //yellow fill
+        fillOpacity: 1,
+        strokeWeight: 2,
+        strokeColor: "#000000", //black border
+        rotation: 0 
+    };
 }
 
 window.onload = function() {
