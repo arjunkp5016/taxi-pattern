@@ -54,14 +54,22 @@ function updatePosition(position) {
             map: map,
             title: "Your Location",
             icon: {
-                path: google.maps.SymbolPath.CIRCLE,
+                path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
                 scale: 10,
-                fillColor: "#4285F4",
+                fillColor: "#FFFF00", //yellow fill
                 fillOpacity: 1,
                 strokeWeight: 2,
-                strokeColor: "#FFFFFF",
+                strokeColor: "#000000", //black border
+                rotation: 0 //update this with the actual header
             }
         });
+    }
+
+    //update arrow rotation if heading is available 
+    if (position.coords.heading != null) {
+        const icon = userMarker.getIcon();
+        icon.rotation = position.coords.heading;
+        userMarker.setIcon(icon);
     }
 
     console.log('User location updated');
@@ -79,9 +87,12 @@ function logLocation(location, timestamp) {
     const locationData = {
         latitude: location.lat,
         longitude: location.lng,
-        timestamp: timestamp
+        timestamp: timestamp,
+        heading: position.coords.heading
     };
     
+    console.log(locationData)
+
     // Send data to server
     fetch('/log-location', {
         method: 'POST',
