@@ -57,7 +57,7 @@ function updatePosition(position) {
     
     // Center the map on the user's location
     map.setCenter(userLocation);
-    map.setZoom(15)
+    map.setZoom(12)
 
     // Add or update marker for the user's location
     if (userMarker) {
