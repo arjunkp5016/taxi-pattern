@@ -122,8 +122,9 @@ function logLocation(location, timestamp) {
 
 function getMarkerIcon(zoomLevel) {
     // Adjust size based on zoom level
-    const scale = Math.pow(2, zoomLevel) / 512; //Adjust this scale as needed to match road width
-    const size = 20 * scale;
+    // Adjust this scale as needed to match road width
+    const scale = Math.pow(2, zoomLevel) / 1024; // Increased divisor to make scale smaller 
+    const size = 10 * scale; // Reduce base size to 10
 
     return {
         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
