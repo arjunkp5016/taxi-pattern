@@ -1,6 +1,7 @@
 let map;
 let userMarker;
 let watchId;
+let currentHeading = 0;
 
 function initMap() {
     console.log('Initializing map...');
@@ -9,25 +10,24 @@ function initMap() {
     const defaultLocation = { lat: 40.7831, lng: -73.9712 };
     
     map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
+        zoom: 12,
         center: defaultLocation,
+        heading: currentHeading, // Set initial heading
     });
 
-    //Initial marker with dynamic size
-    // userMarker = new google.maps.Marker({
-    //     position: userLocation,
-    //     map: map,
-    //     title: "Your Location",
-    //     icon: getMarkerIcon(map.getZoom())
-    // });
-
-    //Add zoom change listener to adjust marker size
-    // map.addlistener('zoom changed', () => {
-    //     userMarker.setIcon(getMarkerIcon(map.getZoom()));
-    // });
+    //Handle orientation changes
+    window.addEventListener('deviceorientation', (event) => {
+        const alpha = event.alpha; // The rotation aroung the z-axis (in-degrees)
+        updateMapHeading(alpha)
+    })
 
         console.log('Map centered on default location');
     }
+
+function updateMapHeading(heading) {
+    currentHeading = heading;
+    map.setHeading(heading); // Update the map heading to rotate based on device orientation
+}
 
 function startLocationTracking() {
     if (navigator.geolocation) {
@@ -57,7 +57,8 @@ function updatePosition(position) {
     
     // Center the map on the user's location
     map.setCenter(userLocation);
-    
+    map.setZoom(15)
+
     // Add or update marker for the user's location
     if (userMarker) {
         userMarker.setPosition(userLocation);
@@ -125,23 +126,6 @@ function logLocation(location, timestamp) {
     .catch((error) => console.error('Error logging location:', error));
 }
 
-// function getMarkerIcon(zoomLevel) {
-    // Adjust size based on zoom level
-    // Adjust this scale as needed to match road width
-    // const scale = Math.pow(2, zoomLevel) / 1024; // Increased divisor to make scale smaller 
-    // const size = 10 * scale; // Reduce base size to 10
-
-    // return {
-    //     path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-    //     scale: size,
-    //     fillColor: "#FFFF00", //yellow fill
-    //     fillOpacity: 1,
-    //     strokeWeight: 2,
-    //     strokeColor: "#000000", //black border
-    //     // rotation: 0 
-    // };
-// }
-
 window.onload = function() {
     const mapDiv = document.getElementById('map');
     mapDiv.style.visibility = 'visible';
@@ -149,9 +133,11 @@ window.onload = function() {
     
     const startButton = document.getElementById('startLocationButton');
     const stopButton = document.getElementById('stopLocationButton');
+    const pickup = document.getElementById('logLocation')
     
     startButton.addEventListener('click', startLocationTracking);
     stopButton.addEventListener('click', stopLocationTracking);
+    pickup.addEventListener('click', logLocation);
     
     window.dispatchEvent(new Event('resize'));
 }
