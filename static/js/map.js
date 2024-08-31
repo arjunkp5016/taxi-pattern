@@ -130,7 +130,17 @@ function logLocation(location, timestamp) {
         },
         body: JSON.stringify(locationData),
     })
-    .then(response => response.json())
+    // .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            // Attempt to parse and log the error details
+            return response.json().then(err => {
+                console.error('Error logging location', err);
+                throw new Error('Error logging location: ', JSON.stringify(err));
+            });
+        }
+        return response.json();
+    })
     .then(data => console.log('Location logged:', data))
     .catch((error) => console.error('Error logging location:', error));
 }
@@ -146,7 +156,28 @@ window.onload = function() {
     
     startButton.addEventListener('click', startLocationTracking);
     stopButton.addEventListener('click', stopLocationTracking);
-    pickup.addEventListener('click', logLocation);
+
+    // Modify the pickup button event listener to correctly log location
+    pickup.addEventListener('click', () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    const timestamp = new Date().toISOString();
+                    logLocation(userLocation, timestamp);
+                },
+                (error) => {
+                    console.log('Error getting current position: ', error);
+                    alert('Unable to retrieve your location. ' + error.message);
+                }
+            );
+        } else {
+            alert('Geolocation is not supported by your browser');
+        }
+    });
     
     window.dispatchEvent(new Event('resize'));
 }
