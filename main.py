@@ -39,7 +39,7 @@ Base.metadata.create_all(bind=engine)
 class LocationData(BaseModel):
     latitude: float
     longitude: float
-    timestamp: str
+    timestamp: str # Expecting ISO 8601 formatted string
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -50,13 +50,19 @@ async def read_root(request: Request):
 async def log_location(location_data: LocationData, request: Request):
     client_ip = request.client.host
     current_time = datetime.now()
+
+    try:
+        parsed_timestamp = datetime.fromisoformat(location_data.timestamp)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="Invalid timestamp format. Expected ISO 8601.")
     
     db = SessionLocal()
     try:
         new_log = LocationLog(
             latitude=location_data.latitude,
             longitude=location_data.longitude,
-            timestamp=datetime.fromisoformat(location_data.timestamp),
+            # timestamp=datetime.fromisoformat(location_data.timestamp),
+            timestamp=parsed_timestamp,
             ip_address=client_ip,
             server_timestamp=current_time
         )
