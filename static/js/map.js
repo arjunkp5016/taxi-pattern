@@ -104,7 +104,7 @@ function updatePosition(position) {
     console.log('User location updated');
     
     // Log location data
-    logLocation(userLocation, new Date().toISOString());
+    // logLocation(userLocation, new Date().toISOString());
 }
 
 function handleLocationError(error) {
